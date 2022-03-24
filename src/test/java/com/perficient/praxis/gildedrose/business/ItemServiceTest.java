@@ -68,6 +68,46 @@ public class ItemServiceTest {
         verify(itemRepository,times(1)).save(any());
     }
 
+    @Test
+    public void testUpdateItemWhenItemWasNotFound(){
+        var item = new Item(6, "Ice Cream", 10, 30, Item.Type.AGED);
+        when(itemRepository.findById(anyInt())).thenReturn(Optional.of(item));
+
+        assertThrows(ResourceNotFoundException.class, () ->
+                itemService.updateItem(23, item));
+    }
+
+    @Test
+    public void testUpdateQualityOfAgedTypeItem(){
+
+        var item = new Item(0, "Oreo2", 10, 30, Item.Type.AGED);
+        when(itemRepository.findAll()).thenReturn(List.of(item));
+
+        List<Item> itemsUpdated = itemService.updateQuality();
+
+        assertEquals(0, itemsUpdated.get(0).getId());
+        assertEquals("Oreo2", itemsUpdated.get(0).name);
+        assertEquals(9, itemsUpdated.get(0).sellIn);
+        assertEquals(31, itemsUpdated.get(0).quality);
+        assertEquals(Item.Type.AGED, itemsUpdated.get(0).type);
+        verify(itemRepository,times(1)).save(any());
+    }
+
+    @Test
+    public void testUpdateQualityOfTicketTypeItem(){
+
+        var item = new Item(0, "Other cookie", 5, 30, Item.Type.TICKETS);
+        when(itemRepository.findAll()).thenReturn(List.of(item));
+
+        List<Item> itemsUpdated = itemService.updateQuality();
+
+        assertEquals(0, itemsUpdated.get(0).getId());
+        assertEquals("Other cookie", itemsUpdated.get(0).name);
+        assertEquals(4, itemsUpdated.get(0).sellIn);
+        assertEquals(33, itemsUpdated.get(0).quality);
+        assertEquals(Item.Type.TICKETS, itemsUpdated.get(0).type);
+        verify(itemRepository,times(1)).save(any());
+    }
 
 
 
@@ -75,5 +115,4 @@ public class ItemServiceTest {
 
 
 
-
-}
+    }
